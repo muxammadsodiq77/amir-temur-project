@@ -268,7 +268,7 @@
                             responseModalities: ["AUDIO"],
                             speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
                         },
-                        model: "gemini-2.5-flash-preview-tts"
+                        model: "gemini-1.5-flash"
                     })
                 });
 
