@@ -1,16 +1,25 @@
 
+<!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amir Temur: Adolat va Qudrat Merosi</title>
     
+    <!-- Kutubxonalar -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <script>
-        const apiKey = ""; 
+        /**
+         * DIQQAT: Ovozli funksiyalar ishlashi uchun API KEY kerak.
+         * Uni https://aistudio.google.com/ saytidan bepul olishingiz mumkin.
+         * Olingan kalitni pastdagi qo'shtirnoq ichiga qo'ying:
+         */
+        const apiKey = "AIzaSyCe3KHntBtXqGu2pVr4_-yS3g3vxrHid3k"; 
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'temur-heritage-2026';
+        const authorName = "Muxammadsodiq Xoshimov"; 
 
         tailwind.config = {
             theme: {
@@ -30,7 +39,7 @@
     </script>
 
     <style>
-        body { font-family: 'Montserrat', sans-serif; scroll-behavior: smooth; }
+        body { font-family: 'Montserrat', sans-serif; scroll-behavior: smooth; background-color: #f0f2f5; }
         .serif { font-family: 'Playfair Display', serif; }
         
         .gold-gradient {
@@ -38,191 +47,188 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .islamic-bg {
             background-image: url('https://www.transparenttextures.com/patterns/islamic-art.png');
             background-color: #0a1128;
         }
-        
+
         .glass {
             background: rgba(28, 37, 65, 0.85);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.3);
         }
-        
-        .active-tab { 
-            border-bottom: 4px solid #d4af37 !important; 
-            color: #d4af37 !important; 
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .is-speaking {
-            animation: pulse-glow 1.5s infinite;
-            border: 2px solid #d4af37 !important;
-        }
 
+        .active-tab { border-left: 6px solid #d4af37 !important; background: rgba(212, 175, 55, 0.1); color: #d4af37 !important; }
+        
         @keyframes pulse-glow {
             0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
             100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
         }
-        
-        .chat-container { height: 450px; overflow-y: auto; scrollbar-width: thin; }
-        .bot-msg { background: rgba(212, 175, 55, 0.1); border-left: 4px solid #d4af37; }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+        .is-speaking {
+            animation: pulse-glow 1.5s infinite;
+            border-color: #d4af37 !important;
+            background: #d4af37 !important;
+            color: #0a1128 !important;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #insight-box { transition: opacity 0.5s ease; }
+        .chat-container { 
+            height: 400px; 
+            overflow-y: auto; 
+        }
+
+        .bot-msg { background: rgba(212, 175, 55, 0.1); border-left: 4px solid #d4af37; }
+        
+        /* Modal uslubi */
+        #api-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900">
+<body class="text-temurid-900">
 
-    <header class="relative min-h-screen flex items-center islamic-bg text-white overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-temurid-900/80 to-temurid-900"></div>
+    <!-- API OGOHLANTIRISH MODALI -->
+    <div id="api-modal">
+        <div class="bg-white p-8 rounded-3xl max-w-md w-full text-center">
+            <div class="text-5xl mb-4">🔑</div>
+            <h3 class="text-2xl font-bold mb-4">API Kalit Topilmadi</h3>
+            <p class="text-gray-600 mb-6">
+                Ovozli funksiyalar (TTS) ishlashi uchun Google AI API kaliti kerak. 
+                Uni <b>aistudio.google.com</b> saytidan bepul olib, kodning 16-qatoriga qo'ying.
+            </p>
+            <button onclick="document.getElementById('api-modal').style.display='none'" class="w-full bg-temurid-900 text-white py-3 rounded-xl font-bold">Tushunarli</button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="relative min-h-screen flex items-center islamic-bg text-white overflow-hidden border-b-8 border-temurid-gold">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-temurid-900 opacity-90"></div>
+        
         <div class="container mx-auto px-6 relative z-10 text-center">
-            <div class="flex flex-col items-center mb-8">
-                <span class="inline-block px-6 py-2 border-2 border-temurid-gold/50 text-temurid-gold rounded-full tracking-widest text-sm uppercase mb-4 bg-temurid-gold/5 italic">
-                    Interaktiv Tarixiy Platforma
+            <div class="mb-6">
+                <span class="inline-block px-6 py-2 border border-temurid-gold text-temurid-gold rounded-full tracking-widest text-sm uppercase mb-4 bg-temurid-gold/5">
+                    Raqamli Tarixiy Eksponat • 2026
                 </span>
+                <h1 class="serif text-7xl md:text-9xl mb-6 gold-gradient font-black tracking-tight">Amir Temur</h1>
+                <p class="text-2xl md:text-5xl font-light text-gray-300 mb-10 italic">"Kuch — adolatdadir"</p>
             </div>
-            <h1 class="serif text-7xl md:text-9xl mb-6 gold-gradient font-black tracking-tighter">Amir Temur</h1>
-            <p class="text-2xl md:text-5xl font-light text-blue-100 mb-10 italic">"Kuch — adolatdadir"</p>
-            
+
             <div class="flex flex-wrap justify-center gap-6">
-                <button onclick="generateInsight(this)" class="bg-temurid-gold text-temurid-900 px-10 py-5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-3 min-w-[220px] justify-center">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Yangi Hikmat</span>
+                <button onclick="generateInsight()" class="bg-temurid-gold text-temurid-900 px-10 py-5 rounded-2xl font-bold hover:scale-105 transition-all shadow-xl flex items-center gap-3 text-lg">
+                    <span>✨ Yangi Hikmat</span>
                 </button>
-                <button onclick="speakText('Kuch adolatdadir. Adolat esa har bir ishning asosidir.', this)" class="bg-white/10 backdrop-blur-xl border border-white/20 px-10 py-5 rounded-2xl font-bold hover:bg-white/20 transition-all flex items-center gap-3">
-                    <i class="fa-solid fa-volume-high"></i> Ovozli tinglash
+                <button id="main-speak-btn" onclick="speakWithGemini('Kuch adolatdadir. Adolat esa har bir ishning asosidir.', this)" class="bg-white/10 backdrop-blur-xl border border-white/20 px-10 py-5 rounded-2xl font-bold hover:bg-white/20 transition-all flex items-center gap-3 text-lg">
+                    <span>🔊 Tinglash</span>
                 </button>
             </div>
+
+            <div id="insight-box" class="mt-12 max-w-3xl mx-auto glass p-8 rounded-3xl text-2xl text-temurid-gold italic hidden animate-fade shadow-2xl"></div>
             
-            <div id="insight-box" class="mt-12 max-w-3xl mx-auto glass p-8 rounded-3xl text-2xl text-temurid-gold italic hidden border-2 border-temurid-gold/30 opacity-0"></div>
+            <div class="mt-16 text-white/50 text-sm">
+                Loyiha muallifi: <span class="text-temurid-gold font-bold" id="author-display"></span>
+            </div>
         </div>
     </header>
 
     <main class="py-24 container mx-auto px-6 space-y-32">
-        <!-- Xronologiya -->
-        <section class="bg-white rounded-[3rem] shadow-2xl border border-slate-200 overflow-hidden">
+        
+        <!-- XRONOLOGIYA -->
+        <section class="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100">
             <div class="grid grid-cols-1 lg:grid-cols-12">
-                <div class="lg:col-span-4 bg-temurid-900 p-12 text-white flex flex-col justify-between">
-                    <div>
-                        <h2 class="serif text-4xl mb-8 border-b-2 border-temurid-gold/30 pb-6 flex items-center gap-3 text-temurid-gold">
-                            <i class="fa-solid fa-calendar-days"></i> Tarixiy Davrlar
-                        </h2>
-                        <div class="space-y-4">
-                            <button onclick="changeStep(0)" id="btn-0" class="timeline-nav w-full text-left p-6 rounded-2xl hover:bg-white/5 transition-all active-tab group">
-                                <span class="block text-temurid-gold font-bold text-xl mb-1">1336 — 1370</span>
-                                <span class="text-sm opacity-60">Yoshlik va Kurash</span>
-                            </button>
-                            <button onclick="changeStep(1)" id="btn-1" class="timeline-nav w-full text-left p-6 rounded-2xl hover:bg-white/5 transition-all group">
-                                <span class="block text-temurid-gold font-bold text-xl mb-1">1370 — 1390</span>
-                                <span class="text-sm opacity-60">Saltanat Tiklanishi</span>
-                            </button>
-                            <button onclick="changeStep(2)" id="btn-2" class="timeline-nav w-full text-left p-6 rounded-2xl hover:bg-white/5 transition-all group">
-                                <span class="block text-temurid-gold font-bold text-xl mb-1">1390 — 1405</span>
-                                <span class="text-sm opacity-60">Buyuk Zafarlar</span>
-                            </button>
-                        </div>
+                <div class="lg:col-span-4 bg-temurid-900 p-12 text-white">
+                    <h2 class="serif text-4xl mb-10 border-b border-temurid-gold pb-6 text-temurid-gold">Tarixiy Davrlar</h2>
+                    <div class="space-y-4">
+                        <button onclick="changeStep(0)" id="btn-0" class="timeline-nav w-full text-left p-6 rounded-2xl transition-all active-tab">
+                            <span class="block font-bold text-lg">1336 - 1370</span>
+                            <span class="text-sm opacity-60">Yoshlik va Yuksalish</span>
+                        </button>
+                        <button onclick="changeStep(1)" id="btn-1" class="timeline-nav w-full text-left p-6 rounded-2xl transition-all">
+                            <span class="block font-bold text-lg">1370 - 1390</span>
+                            <span class="text-sm opacity-60">Yagona Saltanat</span>
+                        </button>
+                        <button onclick="changeStep(2)" id="btn-2" class="timeline-nav w-full text-left p-6 rounded-2xl transition-all">
+                            <span class="block font-bold text-lg">1390 - 1405</span>
+                            <span class="text-sm opacity-60">Jahon G'olibi</span>
+                        </button>
                     </div>
                 </div>
-                
-                <div id="timeline-content" class="lg:col-span-8 p-16 flex flex-col justify-center bg-slate-50/50">
-                    <div class="flex justify-between items-start mb-8">
-                        <h3 id="step-title" class="serif text-5xl text-temurid-800 font-black">Yoshlik va Kamolot</h3>
-                        <button onclick="speakText(document.getElementById('step-desc').innerText, this)" class="bg-temurid-gold/10 p-4 rounded-full hover:bg-temurid-gold/30 transition text-xl text-temurid-gold">🔊</button>
+
+                <div id="timeline-wrapper" class="lg:col-span-8 p-16 flex flex-col justify-center">
+                    <div class="flex justify-between items-center mb-10">
+                        <h3 id="step-title" class="serif text-5xl text-temurid-900 font-bold">Yoshlik va Kamolot</h3>
+                        <button onclick="speakCurrentStep(this)" class="w-16 h-16 bg-temurid-gold/20 text-temurid-900 rounded-full hover:scale-110 transition flex items-center justify-center">
+                            <span class="text-2xl">🔊</span>
+                        </button>
                     </div>
                     <div class="space-y-8">
-                        <p id="step-desc" class="text-2xl text-slate-700 leading-relaxed font-light italic">Amir Temur bir ming uch yuz o'ttiz oltinchi yilda Shahrisabzda dunyoga keldi. U yoshligidan jasur va o'tkir zehni bilan ajralib turdi.</p>
-                        <div class="bg-white p-8 rounded-[2rem] border-l-8 border-temurid-gold shadow-lg">
-                            <h4 class="font-bold text-temurid-900 mb-3 uppercase tracking-wider text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-lightbulb text-temurid-gold"></i> Tarixiy fakt:
-                            </h4>
-                            <p id="step-fact" class="text-lg text-slate-600 leading-relaxed italic">Amir Temur shaxmat o'yinining mohir ustasi bo'lgan.</p>
+                        <p id="step-desc" class="text-2xl text-gray-700 leading-relaxed italic font-light">
+                            Amir Temur bir ming uch yuz o'ttiz oltinchi yilda Shahrisabzda dunyoga keldi. U yoshligidan jasur va o'tkir zehni bilan ajralib turdi.
+                        </p>
+                        <div class="bg-temurid-gold/10 p-8 rounded-[2rem] border-l-8 border-temurid-gold">
+                            <p id="step-fact" class="text-lg text-gray-800 font-medium">Amir Temur shaxmat o'yinining mohir ustasi bo'lgan va murakkab strategiyalarni sevgan.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- AI Chat -->
-        <section class="max-w-5xl mx-auto" id="muloqot">
-            <div class="glass p-12 rounded-[3.5rem] shadow-2xl border-2 border-temurid-gold/20 relative overflow-hidden islamic-bg">
-                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-temurid-gold via-white to-temurid-gold"></div>
-                <div class="text-center mb-10 relative z-10">
-                    <i class="fa-solid fa-crown text-temurid-gold text-4xl mb-4"></i>
-                    <h2 class="serif text-4xl text-white mb-2">Sohibqiron bilan muloqot</h2>
-                    <p class="text-blue-200 opacity-80">Savollaringizga "Tuzuklar" asosida javob oling</p>
+        <!-- CHAT -->
+        <section class="max-w-5xl mx-auto">
+            <div class="glass p-12 rounded-[4rem] shadow-2xl border-2 border-temurid-gold/20">
+                <div class="text-center mb-12">
+                    <h2 class="serif text-5xl text-temurid-gold mb-4">Sohibqiron bilan suhbat</h2>
+                    <p class="text-gray-300 text-lg">Tarix, adolat va saltanat sirlari haqida so'rang</p>
                 </div>
-                
-                <div id="chat-box" class="chat-container mb-8 space-y-6 p-8 bg-black/40 rounded-[2rem] border border-white/5 relative z-10">
-                    <div class="flex flex-col items-start max-w-[85%]">
-                        <div class="p-6 rounded-2xl bot-msg text-xl text-white shadow-lg relative">
-                            <span class="text-temurid-gold font-bold text-xs uppercase block mb-2 tracking-widest">Amir Temur ✨</span>
-                            <p id="welcome-text" class="leading-relaxed italic">Assalomu alaykum, ey kelajak vorisi. Bizning saltanatimiz haqida ne savolingiz bor? Savol bering, javobini bizdan ovozli tinglang.</p>
-                            <button onclick="speakText(document.getElementById('welcome-text').innerText, this)" class="mt-4 text-temurid-gold text-sm flex items-center gap-2 hover:underline">
-                                <i class="fa-solid fa-volume-high"></i> Ovozli eshitish
-                            </button>
+
+                <div id="chat-box" class="chat-container mb-8 space-y-6 p-8 bg-black/20 rounded-[2.5rem] border border-white/5">
+                    <div class="p-6 rounded-3xl bot-msg text-xl flex justify-between items-start text-white">
+                        <div>
+                            <span class="text-temurid-gold font-bold block mb-2 text-sm uppercase tracking-widest">Amir Temur ✨</span>
+                            <p class="leading-relaxed">Assalomu alaykum, ey kelajak vorisi. Bizning saltanatimiz haqida ne savolingiz bor?</p>
                         </div>
+                        <button onclick="speakWithGemini(this.previousElementSibling.querySelector('p').innerText, this)" class="mt-4 text-temurid-gold text-2xl">🔊</button>
                     </div>
                 </div>
-                
-                <div class="flex flex-col md:flex-row gap-4 relative z-10">
-                    <input type="text" id="user-input" placeholder="Savolingizni shu yerga yozing..." 
-                           class="flex-1 px-8 py-5 rounded-2xl bg-white/10 border border-white/20 focus:outline-none focus:ring-4 focus:ring-temurid-gold/40 text-white text-xl placeholder:text-white/40" 
-                           onkeypress="if(event.key === 'Enter') askAI()">
-                    <button id="send-btn" onclick="askAI()" class="bg-temurid-gold text-temurid-900 px-12 py-5 rounded-2xl font-black hover:bg-yellow-400 active:scale-95 shadow-2xl transition-all uppercase tracking-wider flex items-center justify-center gap-2">
-                        Yuborish <i class="fa-solid fa-paper-plane"></i>
+
+                <div class="flex gap-4 p-2 bg-white rounded-3xl shadow-lg border border-gray-200">
+                    <input type="text" id="user-input" placeholder="Savolingizni yozing..." 
+                        class="flex-1 bg-transparent px-8 py-6 rounded-2xl focus:outline-none text-xl" 
+                        onkeypress="if(event.key === 'Enter') askAI()">
+                    <button onclick="askAI()" class="bg-temurid-900 text-white px-12 py-6 rounded-[1.5rem] font-bold hover:bg-temurid-800 transition-all text-lg">
+                        Yuborish
                     </button>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="islamic-bg text-white py-16 text-center border-t-8 border-temurid-gold">
+    <footer class="islamic-bg text-white py-24 text-center border-t-8 border-temurid-gold">
         <div class="container mx-auto px-6">
-            <h3 class="text-temurid-gold serif text-4xl mb-6 italic font-bold">"ADOLAT - NAJOTDIR"</h3>
-            <p class="text-xs text-slate-500 uppercase tracking-widest">© 2026 Raqamli Tarix Platformasi</p>
+            <h3 class="text-temurid-gold serif text-4xl mb-6 italic font-bold">"Adolat - najotdir"</h3>
+            <p class="text-gray-400 max-w-xl mx-auto mb-8">
+                Ushbu interaktiv loyiha Amir Temur bobomizning buyuk merosini 2026-yil texnologiyalari bilan uyg'unlashtiradi.
+            </p>
+            <div class="pt-10 border-t border-white/10 text-sm">
+                Tayyorladi: <span class="text-temurid-gold font-bold" id="footer-author"></span> | © 2026
+            </div>
         </div>
     </footer>
 
     <script>
+        window.onload = function() {
+            document.getElementById('author-display').innerText = authorName;
+            document.getElementById('footer-author').innerText = authorName;
+        };
+
         let currentAudio = null;
-        const steps = [
-            { t: "Yoshlik va Kamolot", d: "Amir Temur 1336-yilda tug'ilgan. Yoshligidan harbiy san'at, strategiya va ilmga qattiq qiziqqan. Uning xarakteri 'Kuch adolatdadir' shiori ostida shakllandi.", f: "U nafaqat sarkarda, balki Qur'onni yod bilgan hofiz ham edi." },
-            { t: "Saltanat Tiklanishi", d: "1370-yilda u Movarounnahrni birlashtirdi. Samarqandni poytaxt qilib, dunyodagi eng go'zal shaharga aylantirishni maqsad qildi.", f: "Samarqandni Osiyo sayqali deb atashgan." },
-            { t: "Buyuk Zafarlar", d: "Uning davlati Hindistondan Turkiyagacha yoyilgan edi. 35 yillik yurishlarida biror marta ham mag'lubiyatga uchramagan kamsonli g'oliblardan biridir.", f: "Anqara jangidagi g'alabasi butun Yevropa tarixini o'zgartirib yuborgan." }
-        ];
-
-        function changeStep(i) {
-            document.querySelectorAll('.timeline-nav').forEach(b => b.classList.remove('active-tab'));
-            document.getElementById('btn-' + i).classList.add('active-tab');
-            document.getElementById('step-title').innerText = steps[i].t;
-            document.getElementById('step-desc').innerText = steps[i].d;
-            document.getElementById('step-fact').innerText = steps[i].f;
-        }
-
-        async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (response.ok) return await response.json();
-                } catch (e) {
-                    if (i === retries - 1) throw e;
-                }
-                await new Promise(res => setTimeout(res, delay));
-                delay *= 2;
-            }
-        }
 
         function pcmToWav(pcmData, sampleRate) {
             const buffer = new ArrayBuffer(44 + pcmData.length * 2);
@@ -247,147 +253,113 @@
             return new Blob([buffer], { type: 'audio/wav' });
         }
 
-        async function speakText(text, btn) {
-            if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '<span class="loading-spinner"></span>';
-            btn.disabled = true;
+        async function speakWithGemini(text, btnElement) {
+            if (currentAudio && !currentAudio.paused) {
+                currentAudio.pause();
+                currentAudio = null;
+                btnElement.classList.remove('is-speaking');
+                btnElement.innerText = "🔊";
+                return;
+            }
+            
+            if (!apiKey) {
+                document.getElementById('api-modal').style.display = 'flex';
+                return;
+            }
+
+            btnElement.classList.add('audio-loading');
+            btnElement.innerText = "⏳";
 
             try {
-                const data = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
+                const cleanText = text.replace(/Amir Temur ✨:|Siz:/g, '').trim();
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Vazmin, chuqur va salobatli erkak ovozida o'zbekcha ayting: ${text.substring(0, 500)}` }] }],
+                        contents: [{ parts: [{ text: `Vazmin ovozda ayting: ${cleanText}` }] }],
                         generationConfig: {
                             responseModalities: ["AUDIO"],
-                            speechConfig: { 
-                                voiceConfig: { 
-                                    prebuiltVoiceConfig: { 
-                                        voiceName: "Charon" // Yo'g'on erkak ovozi (Charon yoki Fenrir)
-                                    } 
-                                } 
-                            }
+                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
                         }
                     })
                 });
-
-                const b64Data = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-                if (!b64Data) throw new Error();
-
-                const bin = atob(b64Data);
-                const pcm = new Int16Array(bin.length / 2);
-                for (let i = 0; i < bin.length; i += 2) pcm[i / 2] = (bin.charCodeAt(i + 1) << 8) | bin.charCodeAt(i);
-
-                const blob = pcmToWav(pcm, 24000);
-                currentAudio = new Audio(URL.createObjectURL(blob));
-                
-                currentAudio.onplay = () => {
-                    btn.innerHTML = '<i class="fa-solid fa-volume-high animate-bounce"></i>';
-                    btn.classList.add('is-speaking');
+                const data = await response.json();
+                const audioPart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                const pcmData = new Int16Array(atob(audioPart.inlineData.data).split('').map((c, i, a) => i % 2 === 0 ? (a[i+1].charCodeAt(0) << 8) | c.charCodeAt(0) : null).filter(v => v !== null));
+                const wavBlob = pcmToWav(pcmData, 24000);
+                const audio = new Audio(URL.createObjectURL(wavBlob));
+                audio.onplay = () => {
+                    btnElement.classList.remove('audio-loading');
+                    btnElement.classList.add('is-speaking');
+                    btnElement.innerText = "⏹️";
+                    currentAudio = audio;
                 };
-                currentAudio.onended = () => {
-                    btn.innerHTML = originalContent;
-                    btn.disabled = false;
-                    btn.classList.remove('is-speaking');
-                    currentAudio = null;
+                audio.onended = () => {
+                    btnElement.classList.remove('is-speaking');
+                    btnElement.innerText = "🔊";
                 };
-                currentAudio.play();
-            } catch (e) {
-                btn.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
-                btn.disabled = false;
-                setTimeout(() => { btn.innerHTML = originalContent; }, 2000);
+                audio.play();
+            } catch (error) {
+                btnElement.classList.remove('audio-loading');
+                btnElement.innerText = "🔊";
             }
         }
 
-        async function generateInsight(btn) {
-            const box = document.getElementById('insight-box');
-            const span = btn.querySelector('span');
-            const icon = btn.querySelector('i');
-            
-            const topics = ["adolat", "ilm", "davlat", "jasorat", "do'stlik", "tadbirkorlik", "vatan"];
-            const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-            const randomSeed = Math.floor(Math.random() * 10000);
-            
-            span.innerText = "Izlanmoqda...";
-            icon.className = "fa-solid fa-spinner animate-spin";
-            
+        async function callGemini(prompt, systemInstruction = "") {
+            if(!apiKey) return "AIzaSyCe3KHntBtXqGu2pVr4_-yS3g3vxrHid3k";
             try {
-                const data = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ 
-                            parts: [{ 
-                                text: `Amir Temur tuzuklaridan ${randomTopic} haqida bitta juda qisqa va mazmunli hikmat yozing. Faqat hikmat matnini o'zini yuboring. Oldin aytmagan yangi hikmatingni tanla. ID: ${randomSeed}` 
-                            }] 
-                        }],
-                        generationConfig: { temperature: 0.9 }
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
                     })
                 });
+                const result = await response.json();
+                return result.candidates?.[0]?.content?.parts?.[0]?.text || "Javob topilmadi.";
+            } catch (e) { return "Xatolik yuz berdi."; }
+        }
 
-                const res = data.candidates?.[0]?.content?.parts?.[0]?.text || "Adolat — najotdir.";
-                
-                box.classList.remove('hidden');
-                box.style.opacity = "0";
-                box.innerHTML = `<i class="fa-solid fa-quote-left opacity-30 block mb-2"></i> ${res.trim()}`;
-                
-                setTimeout(() => {
-                    box.style.opacity = "1";
-                    box.style.transition = "opacity 0.6s ease";
-                }, 50);
-
-            } catch (e) {
-                console.error(e);
-            } finally {
-                span.innerText = "Yangi Hikmat";
-                icon.className = "fa-solid fa-wand-magic-sparkles";
-            }
+        async function generateInsight() {
+            const box = document.getElementById('insight-box');
+            box.classList.remove('hidden');
+            box.innerText = "⏳ Yuklanmoqda...";
+            const insight = await callGemini("Amir Temurning 'Temur tuzuklari'dan bitta qisqa hikmat bering.");
+            box.innerText = `“${insight.trim()}”`;
         }
 
         async function askAI() {
             const input = document.getElementById('user-input');
             const chatBox = document.getElementById('chat-box');
-            const sendBtn = document.getElementById('send-btn');
-            const userText = input.value.trim();
-
-            if (!userText) return;
-
-            chatBox.innerHTML += `<div class="flex justify-end w-full"><div class="p-4 rounded-2xl bg-white/10 text-white border border-white/5 max-w-[80%] text-right"><span class="text-[10px] opacity-50 block mb-1">Siz</span><p>${userText}</p></div></div>`;
+            if (!input.value.trim()) return;
+            const userText = input.value;
+            chatBox.innerHTML += `<div class="p-6 rounded-3xl bg-white/10 text-right ml-20 text-white"><p class="text-xl">${userText}</p></div>`;
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
-
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = '<span class="loading-spinner"></span>';
-
-            try {
-                const data = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userText }] }],
-                        systemInstruction: { parts: [{ text: "Siz Amir Temursiz. O'zbek tilida, vazmin va donishmand ohangda javob bering. Tuzuklarga tayaning." }] },
-                        generationConfig: { temperature: 0.7 }
-                    })
-                });
-
-                const response = data.candidates?.[0]?.content?.parts?.[0]?.text || "Biz bu borada tafakkur qilmoqdamiz.";
-                const mid = 'msg-' + Date.now();
-                chatBox.innerHTML += `
-                    <div class="flex flex-col items-start max-w-[85%] animate-fade-in">
-                        <div class="p-6 rounded-2xl bot-msg text-xl text-white shadow-lg">
-                            <span class="text-temurid-gold font-bold text-xs uppercase block mb-2">Amir Temur ✨</span>
-                            <p id="${mid}" class="leading-relaxed italic">${response}</p>
-                            <button onclick="speakText(document.getElementById('${mid}').innerText, this)" class="mt-4 text-temurid-gold text-sm flex items-center gap-2 hover:underline">
-                                <i class="fa-solid fa-volume-high"></i> Ovozli eshitish
-                            </button>
-                        </div>
-                    </div>`;
-            } catch (e) {}
-
-            sendBtn.disabled = false;
-            sendBtn.innerHTML = 'Yuborish <i class="fa-solid fa-paper-plane"></i>';
+            const response = await callGemini(userText, "Siz Amir Temursiz. Vazmin va donishmand ohangda javob bering.");
+            const resId = 'ai-' + Date.now();
+            chatBox.innerHTML += `<div class="p-6 rounded-3xl bot-msg mr-20 flex justify-between items-start text-white"><div><span class="text-temurid-gold font-bold block mb-2 text-sm uppercase tracking-widest">Amir Temur ✨</span><p id="${resId}" class="text-xl leading-relaxed">${response}</p></div><button onclick="speakWithGemini(document.getElementById('${resId}').innerText, this)" class="mt-4 text-temurid-gold text-2xl">🔊</button></div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        const steps = [
+            { t: "Yoshlik va Yuksalish", d: "Amir Temur 1336-yil Shahrisabzda tug'ilgan. U yoshligidan harbiy san'at va davlat boshqaruviga qiziqqan.", f: "Uning ismi 'Temur' - mustahkam degan ma'noni anglatadi." },
+            { t: "Yagona Saltanat", d: "1370-yilda Movarounnahrni birlashtirib, Samarqandni poytaxt etib belgiladi.", f: "Uning davrida Samarqand dunyo poytaxtiga aylandi." },
+            { t: "Jahon G'olibi", d: "Temur hayoti davomida birorta jangda mag'lub bo'lmagan buyuk sarkardadir.", f: "35 yillik yurishlar davomida u 27 mamlakatni birlashtirdi." }
+        ];
+
+        function changeStep(i) {
+            document.querySelectorAll('.timeline-nav').forEach(b => b.classList.remove('active-tab'));
+            document.getElementById('btn-' + i).classList.add('active-tab');
+            document.getElementById('step-title').innerText = steps[i].t;
+            document.getElementById('step-desc').innerText = steps[i].d;
+            document.getElementById('step-fact').innerText = steps[i].f;
+        }
+
+        function speakCurrentStep(btn) {
+            speakWithGemini(document.getElementById('step-desc').innerText, btn);
         }
     </script>
 </body>
