@@ -11,7 +11,7 @@
     
     <script>
         // API kaliti muhit tomonidan taqdim etiladi
-        const apiKey = ""; 
+        const apiKey = "AIzaSyCe3KHntBtXqGu2pVr4_-yS3g3vxrHid3k"; 
 
         tailwind.config = {
             theme: {
